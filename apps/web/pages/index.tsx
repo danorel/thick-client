@@ -2,6 +2,40 @@ import { FunctionComponent } from "react";
 import Head from "next/head";
 
 import { Graph } from "types";
+import { WideTable } from "ui";
+
+const columns = [
+  {
+    title: "ID",
+    dataIndex: "_id",
+    key: "_id"
+  },
+  {
+    title: "Time point",
+    dataIndex: "createdAt",
+    key: "createdAt"
+  },
+  {
+    title: "Low",
+    dataIndex: "low",
+    key: "low"
+  },
+  {
+    title: "High",
+    dataIndex: "high",
+    key: "high"
+  },
+  {
+    title: "Open",
+    dataIndex: "open",
+    key: "open"
+  },
+  {
+    title: "Close",
+    dataIndex: "close",
+    key: "close"
+  }
+];
 
 interface StocksProps {
   graph: Graph;
@@ -13,25 +47,7 @@ const Stocks: FunctionComponent<StocksProps> = ({ graph }) => {
       <Head>
         <title>Stocks page</title>
       </Head>
-      <table>
-        <thead>
-          <tr>
-            <th colSpan="6">Graph of stocks</th>
-          </tr>
-        </thead>
-        <tbody>
-          {graph.map((stock) => (
-            <tr>
-              <td>{stock._id}</td>
-              <td>{stock.createdAt}</td>
-              <td>{stock.open.toFixed(3)}</td>
-              <td>{stock.close.toFixed(3)}</td>
-              <td>{stock.high.toFixed(3)}</td>
-              <td>{stock.low.toFixed(3)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <WideTable columns={columns} dataSource={graph} />
     </div>
   );
 };
