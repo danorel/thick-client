@@ -5,7 +5,7 @@ importers:
   .:
     specifiers:
       prettier: ^2.5.1
-      turbo: latest
+      turbo: ^1.2.4
     devDependencies:
       prettier: 2.6.2
       turbo: 1.2.4
