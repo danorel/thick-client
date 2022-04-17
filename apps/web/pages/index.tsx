@@ -1,24 +1,42 @@
 import { VoidFunctionComponent, useEffect, useState } from "react";
 import Head from "next/head";
 
-import { Graph } from "types";
+import { Graph, GraphStocks } from "types";
 import { WideTable } from "ui";
 
-const fetchFrequency = async () => {
+const INITIAL_STATE = {
+  GRAPH_CONFIG: {
+    _id: undefined,
+    frequency: 1000
+  },
+  GRAPH_STOCKS: []
+};
+
+const fetchGraph = async (): Promise<Graph> => {
   try {
-    const response = await fetch("http://localhost:8080/graph/frequency");
-    const frequency = await response.json();
-    return frequency;
+    const response = await fetch("http://localhost:8080/graph", {
+      mode: "no-cors"
+    });
+    if (!response.ok) {
+      throw INITIAL_STATE.GRAPH_CONFIG;
+    }
+    const graph = await response.json();
+    return graph;
   } catch (err) {
     throw err;
   }
 };
 
-const fetchGraph = async () => {
+const fetchGraphStocks = async (): Promise<GraphStocks> => {
   try {
-    const response = await fetch("http://localhost:8080/graph");
-    const graph = await response.json();
-    return graph;
+    const response = await fetch("http://localhost:8080/graph/stocks", {
+      mode: "no-cors"
+    });
+    if (!response.ok) {
+      return INITIAL_STATE.GRAPH_STOCKS;
+    }
+    const graphStocks = await response.json();
+    return graphStocks;
   } catch (err) {
     throw err;
   }
@@ -58,16 +76,20 @@ const columns = [
 ];
 
 const Stocks: VoidFunctionComponent = () => {
-  const [frequency, setFrequency] = useState<number>(1);
-  const [graph, setGraph] = useState<Graph | null>(null);
+  const [graphConfig, setGraphConfig] = useState<Graph>(
+    INITIAL_STATE.GRAPH_CONFIG
+  );
+  const [graphStocks, setGraphStocks] = useState<GraphStocks>(
+    INITIAL_STATE.GRAPH_STOCKS
+  );
   const [shouldGraphUpdate, setGraphUpdate] = useState<boolean>(false);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetchFrequency()
-        .then((frequency) => {
+      fetchGraph()
+        .then((graphConfig) => {
           setGraphUpdate(true);
-          setFrequency(frequency);
+          setGraphConfig(graphConfig);
         })
         .catch((err) => {
           throw err;
@@ -75,17 +97,17 @@ const Stocks: VoidFunctionComponent = () => {
         .finally(() => {
           setGraphUpdate(false);
         });
-    }, frequency);
+    }, graphConfig.frequency);
     return () => {
       clearInterval(intervalId);
     };
-  }, [frequency]);
+  }, [graphConfig.frequency]);
 
   useEffect(() => {
     if (shouldGraphUpdate) {
-      fetchGraph()
-        .then((graph) => {
-          setGraph(graph);
+      fetchGraphStocks()
+        .then((graphStocks) => {
+          setGraphStocks(graphStocks);
         })
         .catch((err) => {
           throw err;
@@ -93,8 +115,12 @@ const Stocks: VoidFunctionComponent = () => {
     }
   }, [shouldGraphUpdate]);
 
-  if (shouldGraphUpdate || graph === null) {
+  if (shouldGraphUpdate) {
     return <>Loading...</>;
+  }
+
+  if (graphStocks.length === 0) {
+    return <>Stocks not found</>;
   }
 
   return (
@@ -102,7 +128,7 @@ const Stocks: VoidFunctionComponent = () => {
       <Head>
         <title>Stocks page</title>
       </Head>
-      <WideTable columns={columns} dataSource={graph} />
+      <WideTable columns={columns} dataSource={graphStocks} />
     </div>
   );
 };

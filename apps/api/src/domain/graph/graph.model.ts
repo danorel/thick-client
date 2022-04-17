@@ -6,12 +6,17 @@ export interface Graph extends Document {
   frequency: number;
 }
 
-const GraphSchema = new Schema({
-  frequency: {
-    type: Schema.Types.Number,
-    required: true,
-    default: 1
+const GraphSchema = new Schema(
+  {
+    frequency: {
+      type: Schema.Types.Number,
+      required: true,
+      default: 1
+    }
+  },
+  {
+    timestamps: true
   }
-});
+);
 
 export const Graph = model<Graph>(GraphName, GraphSchema);

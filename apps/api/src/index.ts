@@ -17,15 +17,15 @@ app.use("/stock", stockRouter);
 app.use("/graph", graphRouter);
 
 // define a route handler for the default home page
-app.get("/", (req, res) => {
-    res.send("Hello world!");
+app.get("/", (_, res) => {
+  res.send("Hello world!");
 });
 
-mongoose.connect('mongodb://localhost:27017/stock', () => {
-    console.log(`Server connected to database`);
+mongoose.connect("mongodb://localhost:27017/stock", () => {
+  console.log(`Server connected to database`);
 });
 
 // start the Express server
 app.listen(port, () => {
-    console.log(`Server started at http://localhost:${port}`);
+  console.log(`Server started at http://localhost:${port}`);
 });

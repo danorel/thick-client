@@ -1,14 +1,30 @@
+import { Types } from "mongoose";
+
 import { median, random } from "../domain.utils";
 import { Stock } from "../stock/stock.model";
 import { Graph } from "./graph.model";
 
 export class GraphService {
-  async find(): Promise<Stock[]> {
+  async findStocks(): Promise<Stock[]> {
     return Stock.find({});
   }
 
-  async frequency(): Promise<Graph> {
+  async findOne(): Promise<Graph> {
     return Graph.findOne({});
+  }
+
+  async create(graph: Graph): Promise<Graph> {
+    return Graph.create(graph);
+  }
+
+  async update(id: Types.ObjectId, graph: Graph): Promise<Graph> {
+    return Graph.findByIdAndUpdate(id, graph, {
+      new: true
+    });
+  }
+
+  async delete(id: Types.ObjectId): Promise<Graph> {
+    return Graph.findByIdAndDelete(id);
   }
 
   async predict(graph: Stock[]): Promise<Stock> {
