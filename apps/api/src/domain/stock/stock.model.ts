@@ -1,5 +1,7 @@
 import { Document, Schema, model } from "mongoose";
 
+export const StockName = "Stock";
+
 export interface Stock extends Document {
   open: number;
   close: number;
@@ -29,4 +31,4 @@ const StockSchema = new Schema(
   { timestamps: true }
 );
 
-export const Stock = model<Stock>("Stock", StockSchema);
+export const Stock = model<Stock>(StockName, StockSchema);

@@ -8,15 +8,9 @@ type Inputs = {
 };
 
 export default function Admin() {
-  const {
-    formState: { errors },
-    control,
-    handleSubmit
-  } = useForm<Inputs>();
+  const { control, handleSubmit } = useForm<Inputs>();
 
   const onSubmit = (data: Inputs) => console.log(data);
-
-  console.log(errors);
 
   return (
     <div>
