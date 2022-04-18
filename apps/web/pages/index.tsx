@@ -14,12 +14,7 @@ const INITIAL_STATE = {
 
 const fetchGraph = async (): Promise<Graph> => {
   try {
-    const response = await fetch("http://localhost:8080/graph", {
-      mode: "no-cors"
-    });
-    if (!response.ok) {
-      throw INITIAL_STATE.GRAPH_CONFIG;
-    }
+    const response = await fetch("http://localhost:8080/graph");
     const graph = await response.json();
     return graph;
   } catch (err) {
@@ -29,12 +24,7 @@ const fetchGraph = async (): Promise<Graph> => {
 
 const fetchGraphStocks = async (): Promise<GraphStocks> => {
   try {
-    const response = await fetch("http://localhost:8080/graph/stocks", {
-      mode: "no-cors"
-    });
-    if (!response.ok) {
-      return INITIAL_STATE.GRAPH_STOCKS;
-    }
+    const response = await fetch("http://localhost:8080/graph/stocks");
     const graphStocks = await response.json();
     return graphStocks;
   } catch (err) {
@@ -107,7 +97,12 @@ const Stocks: VoidFunctionComponent = () => {
     if (shouldGraphUpdate) {
       fetchGraphStocks()
         .then((graphStocks) => {
-          setGraphStocks(graphStocks);
+          setGraphStocks(
+            graphStocks.map((graphStock) => ({
+              ...graphStock,
+              key: graphStock._id
+            }))
+          );
         })
         .catch((err) => {
           throw err;

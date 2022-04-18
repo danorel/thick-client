@@ -1,29 +1,54 @@
-import { VoidFunctionComponent } from "react";
-import { FieldErrors } from "react-hook-form";
-import { Form } from "antd";
+import { UseControllerProps, useController } from "react-hook-form";
+import { Col, Form, InputNumber, Row, Slider } from "antd";
 
-import {
-  IntegerStepInput,
-  IntegerStepInputProps
-} from "../inputs/IntegerStepInput";
-
-interface IntegerStepFieldProps extends IntegerStepInputProps {
-  name: string;
+type IntegerStepFieldProps<InputType> = UseControllerProps<InputType> & {
+  min?: number;
+  max?: number;
+  step?: number;
   label: string;
-  error: FieldErrors | undefined;
-}
+};
 
-export const IntegerStepField: VoidFunctionComponent<IntegerStepFieldProps> = ({
+export const IntegerStepField = <InputType,>({
+  control,
   name,
-  error,
-  value,
+  rules,
   label,
-  onChange,
-  onBlur
-}) => {
+  min = 1,
+  max = 20,
+  step = 1
+}: IntegerStepFieldProps<InputType>) => {
+  const {
+    field: { value, ...fieldProps },
+    fieldState: { error }
+  } = useController<InputType>({
+    name,
+    control,
+    rules
+  });
+
   return (
     <Form.Item name={name} label={label} help={error && error.message}>
-      <IntegerStepInput value={value} onChange={onChange} onBlur={onBlur} />
+      <Row>
+        <Col span={12}>
+          <Slider
+            {...fieldProps}
+            value={value as number}
+            min={min}
+            max={max}
+            step={step}
+          />
+        </Col>
+        <Col span={4}>
+          <InputNumber
+            {...fieldProps}
+            value={value as number}
+            min={min}
+            max={max}
+            step={step}
+            style={{ margin: "0 16px" }}
+          />
+        </Col>
+      </Row>
     </Form.Item>
   );
 };
