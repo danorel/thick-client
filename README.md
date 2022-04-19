@@ -1,6 +1,23 @@
-# Turborepo starter with pnpm
+# Thick-client starter with pnpm and turbo monorepo
 
-This is an official starter turborepo.
+To have a demo:
+
+```
+1. pnpm install
+2. pnpx turbo run dev
+```
+
+Test the application by such routes:
+
+```
+1. localhost:3000 - UI for users
+2. localhost:3001 - UI for admins
+2. localhost:8080 - API both for users and admins
+```
+
+You will also need to install `mongodb` package to run the application.
+
+Good luck!
 
 ## What's inside?
 
@@ -33,8 +50,7 @@ This repository is used in the `npx create-turbo@latest` command, and selected w
 To build all apps and packages, run the following command:
 
 ```
-cd my-turborepo
-pnpm run build
+pnpx turbo run build
 ```
 
 ### Develop
@@ -42,8 +58,7 @@ pnpm run build
 To develop all apps and packages, run the following command:
 
 ```
-cd my-turborepo
-pnpm run dev
+pnpx turbo run dev
 ```
 
 ### Remote Caching
@@ -53,7 +68,6 @@ Turborepo can use a technique known as [Remote Caching (Beta)](https://turborepo
 By default, Turborepo will cache locally. To enable Remote Caching (Beta) you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
 
 ```
-cd my-turborepo
 pnpx turbo login
 ```
 
