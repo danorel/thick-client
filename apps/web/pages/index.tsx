@@ -1,8 +1,9 @@
 import { VoidFunctionComponent, useEffect, useState } from "react";
-import Head from "next/head";
 
 import { Graph, GraphStocks } from "types";
-import { WideTable } from "ui";
+import { Page, WideTable } from "ui";
+
+import { fetchGraph, fetchGraphStocks } from "../api";
 
 const INITIAL_STATE = {
   GRAPH_CONFIG: {
@@ -10,26 +11,6 @@ const INITIAL_STATE = {
     frequency: 1000
   },
   GRAPH_STOCKS: []
-};
-
-const fetchGraph = async (): Promise<Graph> => {
-  try {
-    const response = await fetch("http://localhost:8080/graph");
-    const graph = await response.json();
-    return graph;
-  } catch (err) {
-    throw err;
-  }
-};
-
-const fetchGraphStocks = async (): Promise<GraphStocks> => {
-  try {
-    const response = await fetch("http://localhost:8080/graph/stocks");
-    const graphStocks = await response.json();
-    return graphStocks;
-  } catch (err) {
-    throw err;
-  }
 };
 
 const columns = [
@@ -65,10 +46,15 @@ const columns = [
   }
 ];
 
-const Stocks: VoidFunctionComponent = () => {
-  const [graphConfig, setGraphConfig] = useState<Graph>(
-    INITIAL_STATE.GRAPH_CONFIG
-  );
+interface StocksProps {
+  graphConfig: Graph;
+}
+
+const Stocks: VoidFunctionComponent<StocksProps> = ({
+  graphConfig: initialGraphConfig
+}) => {
+  const [graphConfig, setGraphConfig] = useState<Graph>(initialGraphConfig);
+
   const [graphStocks, setGraphStocks] = useState<GraphStocks>(
     INITIAL_STATE.GRAPH_STOCKS
   );
@@ -76,9 +62,9 @@ const Stocks: VoidFunctionComponent = () => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
+      setGraphUpdate(true);
       fetchGraph()
         .then((graphConfig) => {
-          setGraphUpdate(true);
           setGraphConfig(graphConfig);
         })
         .catch((err) => {
@@ -110,22 +96,25 @@ const Stocks: VoidFunctionComponent = () => {
     }
   }, [shouldGraphUpdate]);
 
-  if (shouldGraphUpdate) {
-    return <>Loading...</>;
-  }
-
-  if (graphStocks.length === 0) {
-    return <>Stocks not found</>;
-  }
-
   return (
-    <div>
-      <Head>
-        <title>Stocks page</title>
-      </Head>
-      <WideTable columns={columns} dataSource={graphStocks} />
-    </div>
+    <Page title="Stocks page">
+      {(graphStocks.length === 0 || shouldGraphUpdate) && <>Loading...</>}
+      {!shouldGraphUpdate &&
+        (graphStocks.length ? (
+          <WideTable columns={columns} dataSource={graphStocks} />
+        ) : null)}
+    </Page>
   );
 };
+
+export async function getServerSideProps() {
+  const graphConfig = await fetchGraph();
+
+  return {
+    props: {
+      graphConfig
+    }
+  };
+}
 
 export default Stocks;
