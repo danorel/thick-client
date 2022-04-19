@@ -83,6 +83,10 @@ const Stocks: VoidFunctionComponent<StocksProps> = ({
     if (shouldGraphUpdate) {
       fetchGraphStocks()
         .then((graphStocks) => {
+          graphStocks.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
           setGraphStocks(
             graphStocks.map((graphStock) => ({
               ...graphStock,

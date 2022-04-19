@@ -1,13 +1,14 @@
 import { useEffect, useState, VoidFunctionComponent } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
-import { Page, IntegerStepField, ButtonSubmit } from "ui";
+import { Page, IntegerStepField, ButtonSubmit, Switch } from "ui";
 import { Graph } from "types";
 
 import { putGraphConfig, fetchGraphConfig, postGraphStocks } from "../api";
 
 type AdminInput = {
   frequency: number;
+  pushing: boolean;
 };
 
 interface AdminProps {
@@ -25,24 +26,32 @@ const Admin: VoidFunctionComponent<AdminProps> = ({
     reset
   } = useForm<AdminInput>({
     defaultValues: {
-      frequency
+      frequency,
+      pushing: false
     }
+  });
+
+  const pushing = useWatch<AdminInput>({
+    control,
+    name: "pushing"
   });
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      postGraphStocks()
-        .then((r) => {
-          console.log("r", r);
-        })
-        .catch((err) => {
-          throw err;
-        });
+      if (pushing) {
+        postGraphStocks()
+          .then((nextStock) => {
+            console.log("nextStock", nextStock);
+          })
+          .catch((err) => {
+            throw err;
+          });
+      }
     }, frequency);
     return () => {
       clearInterval(intervalId);
     };
-  }, [frequency]);
+  }, [frequency, pushing]);
 
   const onSubmit = ({ frequency }: AdminInput) => {
     setLoading(true);
@@ -70,6 +79,12 @@ const Admin: VoidFunctionComponent<AdminProps> = ({
           min={500}
           max={10000}
           step={1000}
+        />
+
+        <Switch
+          label={"Autogenerate stocks"}
+          name="pushing"
+          control={control}
         />
 
         <ButtonSubmit text="Submit" loading={loading} />

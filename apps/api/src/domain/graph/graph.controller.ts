@@ -26,10 +26,10 @@ router.post(
   "/predict",
   validateStocks,
   validateBodyProps,
-  async (req: Request, res: Response) => {
-    const { graph } = req.body;
+  async (_: Request, res: Response) => {
     try {
-      const nextStock = await graphService.predict(graph);
+      const stocks = await graphService.findStocks();
+      const nextStock = await graphService.predict(stocks);
       return res.status(201).send(nextStock);
     } catch (err) {
       return res.status(400).send("Stock prediction failed");
@@ -48,7 +48,7 @@ router.get("/", async (_, res: Response) => {
 
 router.post("/", validateGraph, async (req: Request, res: Response) => {
   try {
-    const graph = await graphService.findStocks();
+    const { graph } = req.body;
     const newGraph = await graphService.create(graph);
     return res.status(200).send(newGraph);
   } catch (err) {
