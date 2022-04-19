@@ -1,36 +1,10 @@
-import { VoidFunctionComponent } from "react";
+import { useState, VoidFunctionComponent } from "react";
 import { useForm } from "react-hook-form";
 
-import { Page, IntegerStepField } from "ui";
+import { Page, IntegerStepField, ButtonSubmit } from "ui";
 import { Graph } from "types";
 
-const fetchGraphConfig = async (): Promise<Graph> => {
-  try {
-    const response = await fetch("http://localhost:8080/graph");
-    const graphConfig = await response.json();
-    return graphConfig;
-  } catch (err) {
-    throw err;
-  }
-};
-
-const putGraphConfig = async (id: string, frequency: number) => {
-  try {
-    const requestOptions = {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ frequency })
-    };
-    const response = await fetch(
-      `http://localhost:8080/graph/${id}`,
-      requestOptions
-    );
-    const graphConfig = await response.json();
-    return graphConfig;
-  } catch (err) {
-    throw err;
-  }
-};
+import { putGraphConfig, fetchGraphConfig } from "../api";
 
 type AdminInput = {
   frequency: number;
@@ -43,6 +17,8 @@ interface AdminProps {
 const Admin: VoidFunctionComponent<AdminProps> = ({
   graphConfig: { _id: id, frequency }
 }) => {
+  const [loading, setLoading] = useState<boolean>(false);
+
   const {
     control,
     handleSubmit: validateBeforeSubmit,
@@ -54,6 +30,7 @@ const Admin: VoidFunctionComponent<AdminProps> = ({
   });
 
   const onSubmit = ({ frequency }: AdminInput) => {
+    setLoading(true);
     putGraphConfig(id, frequency)
       .then((graphConfig) => {
         reset({
@@ -62,6 +39,9 @@ const Admin: VoidFunctionComponent<AdminProps> = ({
       })
       .catch((err) => {
         throw err;
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -77,7 +57,7 @@ const Admin: VoidFunctionComponent<AdminProps> = ({
           step={1000}
         />
 
-        <input type="submit" />
+        <ButtonSubmit text="Submit" loading={loading} />
       </form>
     </Page>
   );
