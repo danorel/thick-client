@@ -1,10 +1,10 @@
-import { useState, VoidFunctionComponent } from "react";
+import { useEffect, useState, VoidFunctionComponent } from "react";
 import { useForm } from "react-hook-form";
 
 import { Page, IntegerStepField, ButtonSubmit } from "ui";
 import { Graph } from "types";
 
-import { putGraphConfig, fetchGraphConfig } from "../api";
+import { putGraphConfig, fetchGraphConfig, postGraphStocks } from "../api";
 
 type AdminInput = {
   frequency: number;
@@ -28,6 +28,21 @@ const Admin: VoidFunctionComponent<AdminProps> = ({
       frequency
     }
   });
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      postGraphStocks()
+        .then((r) => {
+          console.log("r", r);
+        })
+        .catch((err) => {
+          throw err;
+        });
+    }, frequency);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [frequency]);
 
   const onSubmit = ({ frequency }: AdminInput) => {
     setLoading(true);

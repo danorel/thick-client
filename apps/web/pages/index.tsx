@@ -1,7 +1,7 @@
 import { VoidFunctionComponent, useEffect, useState } from "react";
 
 import { Graph, GraphStocks } from "types";
-import { Page, WideTable } from "ui";
+import { Loader, Page, WideTable } from "ui";
 
 import { fetchGraph, fetchGraphStocks } from "../api";
 
@@ -98,11 +98,11 @@ const Stocks: VoidFunctionComponent<StocksProps> = ({
 
   return (
     <Page title="Stocks page">
-      {(graphStocks.length === 0 || shouldGraphUpdate) && <>Loading...</>}
-      {!shouldGraphUpdate &&
-        (graphStocks.length ? (
-          <WideTable columns={columns} dataSource={graphStocks} />
-        ) : null)}
+      {shouldGraphUpdate ? (
+        <Loader />
+      ) : (
+        <WideTable columns={columns} dataSource={graphStocks} />
+      )}
     </Page>
   );
 };

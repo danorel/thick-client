@@ -48,7 +48,7 @@ router.get("/", async (_, res: Response) => {
 
 router.post("/", validateGraph, async (req: Request, res: Response) => {
   try {
-    const { graph } = req.body;
+    const graph = await graphService.findStocks();
     const newGraph = await graphService.create(graph);
     return res.status(200).send(newGraph);
   } catch (err) {

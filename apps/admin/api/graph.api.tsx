@@ -13,6 +13,23 @@ export const fetchGraphConfig = async (): Promise<Graph> => {
   }
 };
 
+export const postGraphStocks = async () => {
+  try {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    };
+    const response = await fetch(
+      `http://localhost:8080/graph/predict`,
+      requestOptions
+    );
+    const graphConfig = await response.json();
+    return graphConfig;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const putGraphConfig = async (id: string, frequency: number) => {
   try {
     await wait(1000);
