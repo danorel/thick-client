@@ -42,8 +42,6 @@ export const IntegerStepField = <InputType,>({
           <InputNumber
             {...fieldProps}
             value={value as number}
-            min={min}
-            max={max}
             step={step}
             style={{ margin: "0 16px" }}
           />

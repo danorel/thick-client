@@ -1,7 +1,7 @@
 import { Stock } from "./stock.type";
 
 export type Graph = {
-  _id: string | undefined;
+  _id: string;
   frequency: number;
 };
 

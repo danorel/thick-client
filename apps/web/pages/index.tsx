@@ -6,7 +6,7 @@ import { WideTable } from "ui";
 
 const INITIAL_STATE = {
   GRAPH_CONFIG: {
-    _id: undefined,
+    _id: 0,
     frequency: 1000
   },
   GRAPH_STOCKS: []

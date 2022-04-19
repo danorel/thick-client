@@ -8,15 +8,6 @@ import { validateGraph, validateStocks } from "./graph.validation";
 const router = express.Router();
 const graphService = new GraphService();
 
-router.get("/", async (_, res: Response) => {
-  try {
-    const firstGraph = await graphService.findOne();
-    return res.status(200).send(firstGraph);
-  } catch (err) {
-    return res.status(500).send();
-  }
-});
-
 router.get("/stocks", async (_, res: Response) => {
   try {
     const graph = await graphService.findStocks();
@@ -45,6 +36,15 @@ router.post(
     }
   }
 );
+
+router.get("/", async (_, res: Response) => {
+  try {
+    const firstGraph = await graphService.findOne();
+    return res.status(200).send(firstGraph);
+  } catch (err) {
+    return res.status(500).send();
+  }
+});
 
 router.post("/", validateGraph, async (req: Request, res: Response) => {
   try {
@@ -77,7 +77,7 @@ router.put(
 );
 
 router.delete(
-  "/frequency/:id",
+  "/:id",
   validateBodyProps,
   async (req: Request, res: Response) => {
     try {

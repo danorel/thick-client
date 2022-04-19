@@ -1,8 +1,7 @@
 import { VoidFunctionComponent } from "react";
 import { useForm } from "react-hook-form";
-import Head from "next/head";
 
-import { IntegerStepField } from "ui";
+import { Page, IntegerStepField } from "ui";
 import { Graph } from "types";
 
 const fetchGraphConfig = async (): Promise<Graph> => {
@@ -17,12 +16,17 @@ const fetchGraphConfig = async (): Promise<Graph> => {
 
 const putGraphConfig = async (id: string, frequency: number) => {
   try {
-    const response = await fetch(`http://localhost:8080/graph/${id}`, {
+    const requestOptions = {
       method: "PUT",
-      body: JSON.stringify(frequency)
-    });
-    const status = await response.json();
-    return status;
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ frequency })
+    };
+    const response = await fetch(
+      `http://localhost:8080/graph/${id}`,
+      requestOptions
+    );
+    const graphConfig = await response.json();
+    return graphConfig;
   } catch (err) {
     throw err;
   }
@@ -37,9 +41,13 @@ interface AdminProps {
 }
 
 const Admin: VoidFunctionComponent<AdminProps> = ({
-  graphConfig: { frequency, _id: id }
+  graphConfig: { _id: id, frequency }
 }) => {
-  const { control, handleSubmit: validateBeforeSubmit } = useForm<AdminInput>({
+  const {
+    control,
+    handleSubmit: validateBeforeSubmit,
+    reset
+  } = useForm<AdminInput>({
     defaultValues: {
       frequency
     }
@@ -47,8 +55,10 @@ const Admin: VoidFunctionComponent<AdminProps> = ({
 
   const onSubmit = ({ frequency }: AdminInput) => {
     putGraphConfig(id, frequency)
-      .then((status) => {
-        console.log(status);
+      .then((graphConfig) => {
+        reset({
+          ...graphConfig
+        });
       })
       .catch((err) => {
         throw err;
@@ -56,10 +66,7 @@ const Admin: VoidFunctionComponent<AdminProps> = ({
   };
 
   return (
-    <div>
-      <Head>
-        <title>Admin page</title>
-      </Head>
+    <Page title="Admin page">
       <form onSubmit={validateBeforeSubmit(onSubmit)}>
         <IntegerStepField
           label={"Frequency of the stock simulation (in ms.)"}
@@ -72,7 +79,7 @@ const Admin: VoidFunctionComponent<AdminProps> = ({
 
         <input type="submit" />
       </form>
-    </div>
+    </Page>
   );
 };
 
